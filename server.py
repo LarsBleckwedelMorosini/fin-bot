@@ -42,7 +42,7 @@ async def help_template_tool(balance_available: float, last_month_amount: float,
     multi = factor.get(frequency, 1)
     month_income = income * multi
     if balance_available is not None and month_income:
-        return {"over_expenses": (balance_available - last_month_amount + month_income) < 0}
+        return {"over_expenses": (month_income - last_month_amount) < 0}
     return {"over_expenses": False}
 
 @mcp.tool(name="surpresa_gastos", title="Sinaliza Gastos “Surpresa”")
