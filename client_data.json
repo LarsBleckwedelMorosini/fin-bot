@@ -1,76 +1,68 @@
 {
   "cliente": {
-    "nome": "Carlos Oliveira",
-    "idade": 35,
-    "profissao": "Vendedor",
+    "nome": "Pedro Santos",
+    "idade": 31,
+    "profissao": "Professor",
     "estado_civil": "Casado",
-    "filhos": 2
+    "filhos": 1
   },
   "situacao_financeira": {
-    "saldo_atual": 500.00,
-    "renda_mensal": 3000.00,
+    "saldo_atual": 3000.00,
+    "renda_mensal": 5000.00,
     "frequencia_pagamento": "MONTHLY",
-    "gastos_mes_passado": 3500.00
+    "gastos_mes_passado": 4800.00
   },
   "emprestimos": [
     {
       "tipo": "Cartão de Crédito",
-      "valor_restante": 8000.00,
-      "parcelas_restantes": 24,
-      "valor_parcela": 400.00,
-      "juros_mensal": 0.025,
-      "proximo_vencimento": "2025-07-15"
-    },
-    {
-      "tipo": "Financiamento de Carro",
-      "valor_restante": 25000.00,
-      "parcelas_restantes": 36,
-      "valor_parcela": 1200.00,
-      "juros_mensal": 0.018,
-      "proximo_vencimento": "2025-07-20"
+      "valor_restante": 2000.00,
+      "parcelas_restantes": 6,
+      "valor_parcela": 350.00,
+      "juros_mensal": 0.020,
+      "proximo_vencimento": "2025-01-08"
     }
   ],
   "transacoes_recentes": [
     {
       "id": "tx_001",
-      "amount": 100000.00,
-      "category": "Lazer",
-      "transacted_at": "2025-07-04T20:00:00Z",
-      "description": "Carro de luxo"
+      "amount": 800.00,
+      "category": "Saúde",
+      "transacted_at": "2025-01-02T14:00:00Z",
+      "description": "Consulta médica especializada"
     },
     {
       "id": "tx_002",
-      "amount": 500.00,
-      "category": "Lazer",
-      "transacted_at": "2025-07-03T20:00:00Z",
-      "description": "Bar com amigos"
+      "amount": 450.00,
+      "category": "Transporte",
+      "transacted_at": "2025-01-01T09:00:00Z",
+      "description": "Manutenção do carro"
     },
     {
       "id": "tx_003",
-      "amount": 300.00,
-      "category": "Lazer",
-      "transacted_at": "2025-07-02T20:00:00Z",
-      "description": "Beach Party"
+      "amount": 120.00,
+      "category": "Alimentação",
+      "transacted_at": "2024-12-31T18:00:00Z",
+      "description": "Supermercado"
     },
     {
       "id": "tx_004",
-      "amount": 450.00,
-      "category": "Lazer",
-      "transacted_at": "2025-07-01T20:00:00Z",
-      "description": "Bar com amigos"
+      "amount": 90.00,
+      "category": "Alimentação",
+      "transacted_at": "2024-12-30T12:00:00Z",
+      "description": "Almoço"
     },
     {
       "id": "tx_005",
-      "amount": 180.00,
+      "amount": 1200.00,
       "category": "Alimentação",
-      "transacted_at": "2025-07-01T12:30:00Z",
-      "description": "Restaurante"
+      "transacted_at": "2024-12-29T19:00:00Z",
+      "description": "Jantar"
     }
   ],
   "metas_financeiras": {
-    "emergencia": 5000.00,
-    "viagem": 2000.00,
-    "entrada_imovel": 30000.00,
-    "aposentadoria": 200000.00
+    "emergencia": 8000.00,
+    "viagem": 4000.00,
+    "entrada_imovel": 60000.00,
+    "aposentadoria": 400000.00
   }
 }

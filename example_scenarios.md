@@ -19,16 +19,7 @@ Este arquivo contém diferentes cenários financeiros que você pode usar para t
     "saldo_atual": 500.00,
     "renda_mensal": 3000.00,
     "frequencia_pagamento": "MONTHLY",
-    "gastos_mes_passado": 3500.00,
-    "gastos_medios_mensais": {
-      "alimentacao": 800.00,
-      "transporte": 500.00,
-      "moradia": 1200.00,
-      "saude": 400.00,
-      "educacao": 300.00,
-      "lazer": 200.00,
-      "outros": 100.00
-    }
+    "gastos_mes_passado": 3500.00
   },
   "emprestimos": [
     {
@@ -69,13 +60,6 @@ Este arquivo contém diferentes cenários financeiros que você pode usar para t
     "viagem": 2000.00,
     "entrada_imovel": 30000.00,
     "aposentadoria": 200000.00
-  },
-  "habitos": {
-    "gasta_mais_que_ganha": true,
-    "tem_reserva_emergencia": false,
-    "investe_regularmente": false,
-    "controla_gastos": false,
-    "tem_plano_aposentadoria": false
   }
 }
 ```
@@ -97,16 +81,7 @@ Este arquivo contém diferentes cenários financeiros que você pode usar para t
     "saldo_atual": 15000.00,
     "renda_mensal": 8000.00,
     "frequencia_pagamento": "MONTHLY",
-    "gastos_mes_passado": 4500.00,
-    "gastos_medios_mensais": {
-      "alimentacao": 600.00,
-      "transporte": 300.00,
-      "moradia": 1500.00,
-      "saude": 200.00,
-      "educacao": 500.00,
-      "lazer": 800.00,
-      "outros": 600.00
-    }
+    "gastos_mes_passado": 4500.00
   },
   "emprestimos": [
     {
@@ -139,13 +114,6 @@ Este arquivo contém diferentes cenários financeiros que você pode usar para t
     "viagem": 10000.00,
     "entrada_imovel": 100000.00,
     "aposentadoria": 1000000.00
-  },
-  "habitos": {
-    "gasta_mais_que_ganha": false,
-    "tem_reserva_emergencia": true,
-    "investe_regularmente": true,
-    "controla_gastos": true,
-    "tem_plano_aposentadoria": true
   }
 }
 ```
@@ -167,16 +135,7 @@ Este arquivo contém diferentes cenários financeiros que você pode usar para t
     "saldo_atual": 3000.00,
     "renda_mensal": 5000.00,
     "frequencia_pagamento": "MONTHLY",
-    "gastos_mes_passado": 4800.00,
-    "gastos_medios_mensais": {
-      "alimentacao": 700.00,
-      "transporte": 400.00,
-      "moradia": 1200.00,
-      "saude": 300.00,
-      "educacao": 400.00,
-      "lazer": 500.00,
-      "outros": 300.00
-    }
+    "gastos_mes_passado": 4800.00
   },
   "emprestimos": [
     {
@@ -230,13 +189,6 @@ Este arquivo contém diferentes cenários financeiros que você pode usar para t
     "viagem": 4000.00,
     "entrada_imovel": 60000.00,
     "aposentadoria": 400000.00
-  },
-  "habitos": {
-    "gasta_mais_que_ganha": false,
-    "tem_reserva_emergencia": true,
-    "investe_regularmente": false,
-    "controla_gastos": true,
-    "tem_plano_aposentadoria": false
   }
 }
 ```
