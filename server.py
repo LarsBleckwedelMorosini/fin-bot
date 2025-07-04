@@ -27,7 +27,7 @@ async def help_template_tool(balance_available: float, last_month_amount: float,
         ANNUALLY: 1/12 (12 meses)
 
     Returns:
-        dict - Dicionário com a chave "over_expenses" contendo um booleano indicando se o saldo disponível é suficiente para cobrir os gastos do mês. Se over_expenses for False, o saldo disponível é suficiente para cobrir os gastos do mês.
+        dict - Dicionário com a chave "over_expenses" contendo um booleano indicando se o saldo disponível é suficiente para cobrir os gastos do mês. Se over_expenses for False, o saldo disponível é suficiente para cobrir os gastos deste mês se o cliente continuar a gastar como no mês passado.
     """
     factor = {
         "DAILY": 30,
@@ -46,13 +46,12 @@ async def help_template_tool(balance_available: float, last_month_amount: float,
     return {"over_expenses": False}
 
 @mcp.tool(name="surpresa_gastos", title="Sinaliza Gastos “Surpresa”")
-async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], reference_date: str | None = None, window_days: int = 7, threshold_pct: float = 0.30) -> Dict[str, Any]:
+async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], window_days: int = 7, threshold_pct: float = 0.30) -> Dict[str, Any]:
     """
     Retorna alertas de categorias em que o gasto recente ficou > threshold_pct acima da média diária dos últimos window_days.
 
     Args:
         transactions: List[Dict[str, Any]] - Lista de transações
-        reference_date: str | None - Data de referência para o cálculo
         window_days: int - Número de dias para o cálculo da média diária
         threshold_pct: float - Percentual de tolerância para o cálculo da média diária
     
@@ -68,22 +67,17 @@ async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], reference_dat
     Returns:
         Dict[str, Any] - Dicionário com a chave "alerts" contendo uma lista de alertas.
     """
-    # 1) define datas
-    today = datetime.now(timezone.utc).date()
-    if reference_date:
-        today = datetime.fromisoformat(reference_date).date()
-    
-    # 2) encontra a data mais recente nas transações
+    # 1) encontra a data mais recente nas transações
     datas_transacoes = [datetime.fromisoformat(tx["transacted_at"]).date() for tx in transactions]
     if not datas_transacoes:
         return {"alerts": []}
     
     data_mais_recente = max(datas_transacoes)
     
-    # 3) calcula janela de análise (window_days antes da data mais recente)
+    # 2) calcula janela de análise (window_days antes da data mais recente)
     inicio = data_mais_recente - timedelta(days=window_days - 1)
     
-    # 4) agrupa valores por categoria e dia
+    # 3) agrupa valores por categoria e dia
     gastos_por_cat: Dict[str, Dict[datetime, float]] = {}
     for tx in transactions:
         dt = datetime.fromisoformat(tx["transacted_at"]).date()
@@ -91,7 +85,7 @@ async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], reference_dat
             gastos_por_cat.setdefault(tx["category"], {}).setdefault(dt, 0.0) # type: ignore
             gastos_por_cat[tx["category"]][dt] += tx["amount"] # type: ignore
 
-    # 5) calcula média diária de cada categoria (excluindo o dia mais recente)
+    # 4) calcula média diária de cada categoria (excluindo o dia mais recente)
     media_diaria: Dict[str, float] = {}
     for cat, dias in gastos_por_cat.items():
         # Remove o dia mais recente do cálculo da média
@@ -102,7 +96,7 @@ async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], reference_dat
             # Se não há dados históricos, usa um valor baixo como referência
             media_diaria[cat] = 50.0  # R$ 50 como referência mínima
 
-    # 6) total gasto no dia mais recente por categoria
+    # 5) total gasto no dia mais recente por categoria
     gasto_recente: Dict[str, float] = {}
     for tx in transactions:
         dt = datetime.fromisoformat(tx["transacted_at"]).date()
@@ -110,7 +104,7 @@ async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], reference_dat
             gasto_recente.setdefault(tx["category"], 0.0)
             gasto_recente[tx["category"]] += tx["amount"]
 
-    # 7) detecta surpresas
+    # 6) detecta surpresas
     alertas = []
     for cat, val in gasto_recente.items():
         media = media_diaria.get(cat, 0)

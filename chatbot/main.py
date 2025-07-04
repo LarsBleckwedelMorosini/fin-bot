@@ -1,6 +1,7 @@
 import os
 import json
 import asyncio
+import warnings
 from typing import Any, Dict, List
 from contextlib import AsyncExitStack
 from dotenv import load_dotenv
@@ -8,6 +9,10 @@ from openai import AsyncOpenAI
 from openai.types.beta.threads import Message
 from mcp.client.sse import sse_client
 from mcp import ClientSession
+
+# Suprime warnings de deprecação do OpenAI
+warnings.filterwarnings("ignore", message=".*The Assistants API is deprecated.*")
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 load_dotenv()
 
@@ -23,7 +28,7 @@ class MCPSSEClient:
         self.client_data_file = client_data_file
         self.client_data = None
 
-    async def connect(self, url: str = "http://127.0.0.1:3333/sse"):
+    async def connect(self, url: str = "http://0.0.0.0:3333/sse"):
         """Abre e mantém a conexão SSE + MCP session ativa."""
         print("🔌 Conectando ao servidor SSE...")
         try:
@@ -204,17 +209,21 @@ class MCPSSEClient:
                     "output": content
                 })
 
-            run = await self.openai.beta.threads.runs.submit_tool_outputs(
-                thread_id   = self.thread_id,
-                run_id      = run.id,
-                tool_outputs= outputs
-            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                run = await self.openai.beta.threads.runs.submit_tool_outputs(
+                    thread_id   = self.thread_id,
+                    run_id      = run.id,
+                    tool_outputs= outputs
+                )
 
             while run.status != "completed":
                 await asyncio.sleep(0.5)
-                run = await self.openai.beta.threads.runs.retrieve(
-                    thread_id=self.thread_id, run_id=run.id
-                )
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    run = await self.openai.beta.threads.runs.retrieve(
+                        thread_id=self.thread_id, run_id=run.id
+                    )
 
         # 6) recupera as mensagens da thread (as mais recentes por ordem decrescente)
         msgs = await self.openai.beta.threads.messages.list(thread_id=self.thread_id)
