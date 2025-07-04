@@ -1,0 +1,76 @@
+{
+  "cliente": {
+    "nome": "Carlos Oliveira",
+    "idade": 35,
+    "profissao": "Vendedor",
+    "estado_civil": "Casado",
+    "filhos": 2
+  },
+  "situacao_financeira": {
+    "saldo_atual": 500.00,
+    "renda_mensal": 3000.00,
+    "frequencia_pagamento": "MONTHLY",
+    "gastos_mes_passado": 3500.00
+  },
+  "emprestimos": [
+    {
+      "tipo": "Cartão de Crédito",
+      "valor_restante": 8000.00,
+      "parcelas_restantes": 24,
+      "valor_parcela": 400.00,
+      "juros_mensal": 0.025,
+      "proximo_vencimento": "2025-07-15"
+    },
+    {
+      "tipo": "Financiamento de Carro",
+      "valor_restante": 25000.00,
+      "parcelas_restantes": 36,
+      "valor_parcela": 1200.00,
+      "juros_mensal": 0.018,
+      "proximo_vencimento": "2025-07-20"
+    }
+  ],
+  "transacoes_recentes": [
+    {
+      "id": "tx_001",
+      "amount": 100000.00,
+      "category": "Lazer",
+      "transacted_at": "2025-07-04T20:00:00Z",
+      "description": "Carro de luxo"
+    },
+    {
+      "id": "tx_002",
+      "amount": 500.00,
+      "category": "Lazer",
+      "transacted_at": "2025-07-03T20:00:00Z",
+      "description": "Bar com amigos"
+    },
+    {
+      "id": "tx_003",
+      "amount": 300.00,
+      "category": "Lazer",
+      "transacted_at": "2025-07-02T20:00:00Z",
+      "description": "Beach Party"
+    },
+    {
+      "id": "tx_004",
+      "amount": 450.00,
+      "category": "Lazer",
+      "transacted_at": "2025-07-01T20:00:00Z",
+      "description": "Bar com amigos"
+    },
+    {
+      "id": "tx_005",
+      "amount": 180.00,
+      "category": "Alimentação",
+      "transacted_at": "2025-07-01T12:30:00Z",
+      "description": "Restaurante"
+    }
+  ],
+  "metas_financeiras": {
+    "emergencia": 5000.00,
+    "viagem": 2000.00,
+    "entrada_imovel": 30000.00,
+    "aposentadoria": 200000.00
+  }
+}
