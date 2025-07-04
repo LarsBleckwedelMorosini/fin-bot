@@ -22,11 +22,17 @@ pip install -r requirements.txt
 ```
 
 2. **Configure as variáveis de ambiente**:
-Crie um arquivo `.env` com:
-```
-OPENAI_API_KEY=sua_chave_api_aqui
-OPENAI_ASSIS_ID=seu_assistant_id_aqui
-```
+   - Copie o arquivo `env.example` para `.env`:
+     ```bash
+     cp env.example .env
+     ```
+   - Edite o arquivo `.env` e adicione suas chaves reais:
+     ```
+     OPENAI_API_KEY=sua_chave_api_aqui
+     OPENAI_ASSIS_ID=seu_assistant_id_aqui
+     ```
+   
+   ⚠️ **IMPORTANTE**: Nunca commite o arquivo `.env` com suas chaves reais!
 
 3. **Configure o Assistente OpenAI**:
 - Crie um assistente no OpenAI com as instruções financeiras
