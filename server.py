@@ -49,6 +49,9 @@ async def help_template_tool(balance_available: float, last_month_amount: float,
 async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], window_days: int = 7, threshold_pct: float = 0.30) -> Dict[str, Any]:
     """
     Retorna alertas de categorias em que o gasto recente ficou > threshold_pct acima da média diária dos últimos window_days.
+    
+    IMPORTANTE: Só analisa categorias que tenham pelo menos 3 gastos históricos (excluindo o gasto mais recente).
+    Categorias com menos dados são ignoradas por não terem base estatística suficiente.
 
     Args:
         transactions: List[Dict[str, Any]] - Lista de transações
@@ -66,6 +69,7 @@ async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], window_days: 
 
     Returns:
         Dict[str, Any] - Dicionário com a chave "alerts" contendo uma lista de alertas.
+        Só inclui categorias com pelo menos 3 gastos históricos para análise confiável.
     """
     # 1) encontra a data mais recente nas transações
     datas_transacoes = [datetime.fromisoformat(tx["transacted_at"]).date() for tx in transactions]
@@ -86,36 +90,34 @@ async def surpresa_gastos_tool(transactions: List[Dict[str, Any]], window_days: 
             gastos_por_cat[tx["category"]][dt] += tx["amount"] # type: ignore
 
     # 4) calcula média diária de cada categoria (excluindo o dia mais recente)
+    # Mínimo de 3 gastos para análise estatística confiável
     media_diaria: Dict[str, float] = {}
     for cat, dias in gastos_por_cat.items():
         # Remove o dia mais recente do cálculo da média
         dias_sem_recente = {d: v for d, v in dias.items() if d < data_mais_recente}
-        if dias_sem_recente:
+        
+        # Só calcula média se tiver pelo menos 3 gastos históricos
+        if len(dias_sem_recente) >= 3:
             media_diaria[cat] = sum(dias_sem_recente.values()) / len(dias_sem_recente)
-        else:
-            # Se não há dados históricos, usa um valor baixo como referência
-            media_diaria[cat] = 50.0  # R$ 50 como referência mínima
+        # Se tiver menos de 3 gastos, ignora a categoria (não há dados suficientes para análise)
 
-    # 5) total gasto no dia mais recente por categoria
-    gasto_recente: Dict[str, float] = {}
-    for tx in transactions:
-        dt = datetime.fromisoformat(tx["transacted_at"]).date()
-        if dt == data_mais_recente:
-            gasto_recente.setdefault(tx["category"], 0.0)
-            gasto_recente[tx["category"]] += tx["amount"]
-
-    # 6) detecta surpresas
+    # 5) analisa todos os gastos de cada categoria para detectar surpresas
     alertas = []
-    for cat, val in gasto_recente.items():
+    for cat, dias in gastos_por_cat.items():
         media = media_diaria.get(cat, 0)
-        if media and val > media * (1 + threshold_pct):
-            alertas.append({
-                "category": cat,
-                "spent_recently": round(val, 2),
-                "daily_avg": round(media, 2),
-                "pct_over": round((val / media - 1) * 100, 1),
-                "date": data_mais_recente.strftime("%Y-%m-%d"),
-            })
+        if not media:  # Pula se não tem média (menos de 3 gastos históricos)
+            continue
+            
+        # Analisa cada dia para detectar gastos acima da média
+        for dia, valor in dias.items():
+            if valor > media * (1 + threshold_pct):
+                alertas.append({
+                    "category": cat,
+                    "spent_amount": round(valor, 2),
+                    "daily_avg": round(media, 2),
+                    "pct_over": round((valor / media - 1) * 100, 1),
+                    "date": dia.strftime("%Y-%m-%d"),
+                })
 
     return {"alerts": alertas}
 

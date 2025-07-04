@@ -24,33 +24,39 @@ class MCPSSEClient:
         self.openai = AsyncOpenAI(api_key=OPENAI_API_KEY)
         self.model = openai_model
         self.exit_stack = AsyncExitStack()
-        self._history: List[Dict[str, Any]] = []
         self.client_data_file = client_data_file
         self.client_data = None
 
     async def connect(self, url: str = "http://0.0.0.0:3333/sse"):
         """Abre e mantém a conexão SSE + MCP session ativa."""
-        print("🔌 Conectando ao servidor SSE...")
+        # print("🔌 Conectando ao servidor SSE...")
         try:
             # entra no exit_stack, salvando os contextos abertos
             read_stream, write_stream = await self.exit_stack.enter_async_context(sse_client(url))
             self.session = await self.exit_stack.enter_async_context(ClientSession(read_stream, write_stream))
             await self.session.initialize()
-            print("✅ Conexão SSE e sessão MCP inicializadas!")
+            # print("✅ Conexão SSE e sessão MCP inicializadas!")
         except Exception as e:
             print(f"❌ Erro na conexão: {e}")
             await self.close()
             raise
     
-    def load_client_data(self):
+    async def load_client_data(self):
         """Carrega os dados do cliente do arquivo JSON."""
         try:
             with open(self.client_data_file, 'r', encoding='utf-8') as f:
                 self.client_data = json.load(f)
-            print(f"✅ Dados do cliente carregados: {self.client_data['cliente']['nome']}")
+            # print(f"✅ Dados do cliente carregados: {self.client_data['cliente']['nome']}")
+            initial_data_message = f"""
+            DADOS DO CLIENTE (disponíveis para toda a conversa):
+            {json.dumps(self.client_data, indent=2, ensure_ascii=False)}
+
+            IMPORTANTE: Esta não é a primeira mensagem do cliente, mas sim os dados do cliente que estão disponíveis para toda a conversa. Se precisar de cálculos específicos, use as ferramentas disponíveis com os dados corretos do cliente. Se precisar de mais informações, pergunte ao cliente.
+            """
+            await self.send(initial_data_message)
             return True
         except FileNotFoundError:
-            print(f"⚠️ Arquivo {self.client_data_file} não encontrado. Continuando sem dados do cliente.")
+            # print(f"⚠️ Arquivo {self.client_data_file} não encontrado. Continuando sem dados do cliente.")
             return False
         except json.JSONDecodeError as e:
             print(f"❌ Erro ao decodificar JSON: {e}")
@@ -153,25 +159,11 @@ class MCPSSEClient:
         if not self.thread_id or not self.assistant_id:
             raise RuntimeError("Thread não iniciada! Chame start_thread() primeiro.")
 
-        # Prepara o contexto com dados do cliente se disponível
-        full_prompt = prompt
-        if self.client_data:
-            client_context = f"""
-            DADOS DO CLIENTE (sempre disponíveis para consulta):
-            {json.dumps(self.client_data, indent=2, ensure_ascii=False)}
-
-            PERGUNTA DO USUÁRIO:
-            {prompt}
-
-            IMPORTANTE: Use os dados do cliente acima para responder com precisão. Se precisar de cálculos específicos, use as ferramentas disponíveis com os dados corretos do cliente.
-            """
-            full_prompt = client_context
-
         # 1) envia a mensagem do usuário para a thread
         await self.openai.beta.threads.messages.create(
             thread_id=self.thread_id,
             role="user",
-            content=full_prompt
+            content=prompt
         )
 
         # 2) dispara um run, permitindo escolhas de tools
@@ -233,7 +225,6 @@ class MCPSSEClient:
     async def close(self):
         """Fecha streams e sessão MCP."""
         await self.exit_stack.aclose()
-        await self.openai.beta.threads.delete(thread_id=self.thread_id)
 
     def extract_text(self, message: Message) -> str:
         """Extrai o texto de uma mensagem do OpenAI de forma segura."""
@@ -251,20 +242,13 @@ async def main():
         await client.start_thread()
         
         # Carrega dados do cliente
-        client.load_client_data()
+        await client.load_client_data()
         
         # Se tem dados do cliente, faz análise inicial
         if client.client_data:
-            print(f"\n👋 Olá {client.client_data['cliente']['nome']}! Analisando sua situação financeira...")
-            print("=" * 60)
             
             try:
                 analysis = await client.analyze_client_situation()
-                print("📋 ANÁLISE INICIAL DA SUA SITUAÇÃO FINANCEIRA:")
-                print("-" * 50)
-                print(analysis)
-                print("-" * 50)
-                
                 # Envia análise para o assistente como contexto inicial
                 initial_context = f"""
                 Olá! Sou o assistente financeiro. Acabei de analisar a situação do cliente {client.client_data['cliente']['nome']} e aqui está o resumo da análise inicial:
